@@ -2,7 +2,7 @@
 
 ## Authentication
 
-Go to [Google developer console](https://console.developers.google.com/],
+Go to [Google developer console](https://console.developers.google.com/), and follow these [directions](http://gspread.readthedocs.org/en/latest/oauth2.html).
 
 ## Installation
 
