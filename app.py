@@ -21,9 +21,21 @@ def home_office():
 @app.route('/home-office/rent/')
 def rent():
     ss = spreadsheet.open_spreadsheet('Home Office')
-    worksheet = ss.worksheet('2015')
+    # import ipdb; ipdb.set_trace()
+    years = (w.title for w in ss.worksheets())
+    print(years)
+    return render_template('rent.html', years=years)
+
+
+@app.route('/home-office/rent/<year>/')
+def rent_for(year):
+    ss = spreadsheet.open_spreadsheet('Home Office')
+    worksheet = ss.worksheet(year)
     rows = calculation.get_monthly_rent(worksheet.get_all_records())
-    return render_template('rent.html', rows=rows)
+    return render_template(
+        'rent-for-year.html',
+        year_title='Monthly Rent for %s' % year, 
+        rows=rows)
 
 
 if __name__ == '__main__':

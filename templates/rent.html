@@ -3,21 +3,10 @@
 %>
 <%inherit file="base.html"/>
 
-<table>
-  <thead>
-    <tr>
-      <th>Month</th>
-      <th>Total</th>
-      <th>Rent</th>
-    </tr>
-  </thead>
-  <tbody>
-  % for row in rows:
-  <tr>
-    <td>${row['date'].format('MMMM')}</td>
-    <td>${'%0.2f' % row['total']}</td>
-    <td>${'%0.2f' % row['rent']}</td>
-  </tr>
+<ul>
+  % for year in years:
+  <li>
+    <a href="${year}/">${year}</a>
+  </li>
   % endfor
-  </tbody>
-</table>
+</ul>
