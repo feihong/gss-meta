@@ -1,6 +1,9 @@
 <%inherit file="base.html"/>
+<%namespace module="filters" import="currency" />
 
 <%block name="title">Home Office for ${year}</%block>
+
+<p><strong>Total</strong>: ${total | currency}</p>
 
 <h2>Breakdown by month</h2>
 
@@ -16,8 +19,8 @@
   % for row in month_rows:
   <tr>
     <td>${row['date'].format('MMMM')}</td>
-    <td>${'%0.2f' % row['total']}</td>
-    <td>${'%0.2f' % row['rent']}</td>
+    <td>${row['total'] | currency}</td>
+    <td>${row['rent'] | currency}</td>
   </tr>
   % endfor
   </tbody>
@@ -36,7 +39,7 @@
   % for row in category_rows:
   <tr>
     <td>${row['category']}</td>
-    <td>${'{:,.2f}'.format(row['total'])}</td>
+    <td>${row['total'] | currency}</td>
   </tr>
   % endfor
   </tbody>

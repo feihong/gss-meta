@@ -25,13 +25,13 @@ def home_office_for(year):
     ss = spreadsheet.open_spreadsheet('Home Office')
     worksheet = ss.worksheet(year)
     rows = worksheet.get_all_records()
+    total = sum(r['Amount'] for r  in rows)
     month_rows = calculation.get_monthly_rent(rows)
     category_rows = calculation.get_category_numbers(rows)
-    # import ipdb; ipdb.set_trace()
     return render_template(
         'home-office-for-year.html',
         year=year,
-        # title='Home Office Numbers for %s' % year,
+        total=total,
         month_rows=month_rows,
         category_rows=category_rows)
 
