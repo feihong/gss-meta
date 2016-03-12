@@ -1,12 +1,11 @@
-<%!
-    title = 'Home Office'
-%>
 <%inherit file="base.html"/>
 
-<p>
-  <a href='rent/'>Monthly Rent</a>
-</p>
+<%block name="title">Home Office</%block>
 
-<p>
-  <a href='category/'>Category Breakdown</a>
-</p>
+<ul>
+  % for year in years:
+  <li>
+    <a href="${year}/">${year}</a>
+  </li>
+  % endfor
+</ul>

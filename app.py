@@ -15,27 +15,25 @@ def index():
 
 @app.route('/home-office/')
 def home_office():
-    return render_template('home-office.html')
-
-
-@app.route('/home-office/rent/')
-def rent():
     ss = spreadsheet.open_spreadsheet('Home Office')
-    # import ipdb; ipdb.set_trace()
     years = (w.title for w in ss.worksheets())
-    print(years)
-    return render_template('rent.html', years=years)
+    return render_template('home-office.html', years=years)
 
 
-@app.route('/home-office/rent/<year>/')
-def rent_for(year):
+@app.route('/home-office/<year>/')
+def home_office_for(year):
     ss = spreadsheet.open_spreadsheet('Home Office')
     worksheet = ss.worksheet(year)
-    rows = calculation.get_monthly_rent(worksheet.get_all_records())
+    rows = worksheet.get_all_records()
+    month_rows = calculation.get_monthly_rent(rows)
+    category_rows = calculation.get_category_numbers(rows)
+    # import ipdb; ipdb.set_trace()
     return render_template(
-        'rent-for-year.html',
-        year_title='Monthly Rent for %s' % year, 
-        rows=rows)
+        'home-office-for-year.html',
+        year=year,
+        # title='Home Office Numbers for %s' % year,
+        month_rows=month_rows,
+        category_rows=category_rows)
 
 
 if __name__ == '__main__':

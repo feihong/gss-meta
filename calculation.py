@@ -16,3 +16,16 @@ def get_monthly_rent(rows):
     for k, v in items:
         dt = arrow.get(k, 'YYYY-MM')
         yield dict(date=dt, total=v, rent=v/4)
+
+
+def get_category_numbers(rows):
+    categories = defaultdict(float)
+
+    for row in rows:
+        categories[row['Category']] += row['Amount']
+
+    items = list(categories.items())
+    items.sort(key=lambda x: -x[1])  # sort by descending value
+
+    for k, v in items:
+        yield dict(category=k, total=v)
