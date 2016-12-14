@@ -1,7 +1,11 @@
+from datetime import datetime
 from collections import defaultdict
 
 from invoke import task
 from spreadsheet import open_spreadsheet
+
+
+CURRENT_YEAR = datetime.today().year
 
 
 @task
@@ -23,6 +27,17 @@ def checking_account(ctx):
     print('Total credit: {:0.2f}'.format(totals['Credit']))
     print('Revenue: {:0.2f}'.format(revenue))
 
+
+@task
+def home_office(ctx, year=None):
+    year = CURRENT_YEAR if year is None else year
+    ss = open_spreadsheet('Home Office %s' % year)
+    worksheet = ss.worksheet('Repairs & maintenance')
+    total = 0
+    for row in worksheet.get_all_records():
+        total += get_float(row['Price'])
+
+    print('Repairs & maintenance total: {:0.2f}'.format(total))
 
 def get_float(text):
     if text.strip() == '':
