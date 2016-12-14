@@ -33,17 +33,28 @@ def home_office(ctx, year=None):
     year = CURRENT_YEAR if year is None else year
     ss = open_spreadsheet('Home Office %s' % year)
 
-    # Calculate utilities expenses by month
-    worksheet = ss.worksheet('Utilities')
-    print('Utilities by month:')
+    # Calculate utilities & rent amounts
+    rent_fields = ['hoa assessments', 'homeowners insurance', 'gas', 'electric',
+        'mortgage']
+    worksheet = ss.worksheet('Monthly fees')
+    assessment_total = 0
+    insurance_total = 0
+
+    print('Office rent by month:')
     for row in worksheet.get_all_records():
-        row_copy = row.copy()
-        row_copy.pop('Month')
-        total = sum(get_float(v) for v in row_copy.values())
+        total = sum(get_float(v) for k, v in row.items() if k in rent_fields)
         print('{month}: {total:0.2f} (rent is {rent:0.2f})'.format(
             month=row['Month'], total=total, rent=total/4))
 
-    print('='*75)
+        assessment_total += get_float(row['hoa assessments'])
+        insurance_total += get_float(row['homeowners insurance'])
+
+    separator()
+    
+    print('Total paid for hoa assessments:', assessment_total)
+    print('Total paid for homeowners insurance:', insurance_total)
+
+    separator()
 
     # Calculate repairs & maintenance total
     worksheet = ss.worksheet('Repairs & maintenance')
@@ -63,3 +74,7 @@ def get_float(text):
         return float(text[1:])
     else:
         return float(text)
+
+
+def separator():
+    print('='*75)
