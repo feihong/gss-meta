@@ -32,6 +32,20 @@ def checking_account(ctx):
 def home_office(ctx, year=None):
     year = CURRENT_YEAR if year is None else year
     ss = open_spreadsheet('Home Office %s' % year)
+
+    # Calculate utilities expenses by month
+    worksheet = ss.worksheet('Utilities')
+    print('Utilities by month:')
+    for row in worksheet.get_all_records():
+        row_copy = row.copy()
+        row_copy.pop('Month')
+        total = sum(get_float(v) for v in row_copy.values())
+        print('{month}: {total:0.2f} (rent is {rent:0.2f})'.format(
+            month=row['Month'], total=total, rent=total/4))
+
+    print('='*75)
+
+    # Calculate repairs & maintenance total
     worksheet = ss.worksheet('Repairs & maintenance')
     total = 0
     for row in worksheet.get_all_records():
@@ -45,5 +59,7 @@ def get_float(text):
     text = text.replace(',', '')
     if text.startswith('-$'):
         return float(text[2:])
-    else:
+    elif text.startswith('$'):
         return float(text[1:])
+    else:
+        return float(text)
