@@ -43,16 +43,17 @@ def home_office(ctx, year=None):
     print('Office rent by month:')
     for row in worksheet.get_all_records():
         total = sum(get_float(v) for k, v in row.items() if k in rent_fields)
-        print('{month}: {total:0.2f} (rent is {rent:0.2f})'.format(
-            month=row['Month'], total=total, rent=total/4))
+        rent = total / 4
+        print('{month}: {rent:0.2f} (total is {total:0.2f})'.format(
+            month=row['Month'], total=total, rent=rent))
 
         assessment_total += get_float(row['hoa assessments'])
         insurance_total += get_float(row['homeowners insurance'])
 
     separator()
-    
-    print('Total paid for hoa assessments:', assessment_total)
-    print('Total paid for homeowners insurance:', insurance_total)
+
+    print('Total paid for hoa assessments: {:0.2f}'.format(assessment_total))
+    print('Total paid for homeowners insurance: {:0.2f}'.format(insurance_total))
 
     separator()
 
