@@ -5,32 +5,46 @@ from invoke import task
 from spreadsheet import open_spreadsheet
 
 
-CURRENT_YEAR = datetime.today().year
+CURRENT_YEAR = str(datetime.today().year)
 
 
 @task
-def checking_account(ctx):
+def checking_account(ctx, year=CURRENT_YEAR):
     ss = open_spreadsheet('Business Checking Account Activity')
-    worksheet = ss.worksheet('2016')
+    worksheet = ss.worksheet(year)
 
-    totals = defaultdict(float)
+    debit = 0.0
+    credit = 0.0
     revenue = 0.0
+    categories = defaultdict(float)
 
     rows = worksheet.get_all_records()
     for row in rows:
-        if row['Category'] == 'Revenue':
+        category = row['Category']
+        if category == 'Revenue':
             revenue += get_float(row['Credit'])
-        totals['Debit'] += get_float(row['Debit'])
-        totals['Credit'] += get_float(row['Credit'])
+        else:
+            categories[category] += get_float(row['Debit'])
 
-    print('Total debit: {:0.2f}'.format(totals['Debit']))
-    print('Total credit: {:0.2f}'.format(totals['Credit']))
-    print('Revenue: {:0.2f}'.format(revenue))
+        debit += get_float(row['Debit'])
+        credit += get_float(row['Credit'])
+
+    print('Total debit: {:0.2f}'.format(debit))
+    print('Total credit: {:0.2f}'.format(credit))
+    print('Total revenue: {:0.2f}'.format(revenue))
+
+    separator()
+
+    print('Categories:')
+    items = sorted(categories.items(), key=lambda x: -x[1])
+    for k, v in items:
+        if v > 0:
+            print('- {}: {:0.2f}'.format(k, v))
+
 
 
 @task
-def home_office(ctx, year=None):
-    year = CURRENT_YEAR if year is None else year
+def home_office(ctx, year=CURRENT_YEAR):
     ss = open_spreadsheet('Home Office %s' % year)
 
     # Calculate utilities & rent amounts
@@ -64,6 +78,7 @@ def home_office(ctx, year=None):
         total += get_float(row['Price'])
 
     print('Repairs & maintenance total: {:0.2f}'.format(total))
+
 
 def get_float(text):
     if text.strip() == '':
