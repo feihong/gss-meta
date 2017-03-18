@@ -53,6 +53,7 @@ def home_office(ctx, year=CURRENT_YEAR):
     worksheet = ss.worksheet('Monthly fees')
     assessment_total = 0
     insurance_total = 0
+    utilities_total = 0
 
     print('Office rent by month:')
     for row in worksheet.get_all_records():
@@ -63,11 +64,13 @@ def home_office(ctx, year=CURRENT_YEAR):
 
         assessment_total += get_float(row['hoa assessments'])
         insurance_total += get_float(row['homeowners insurance'])
+        utilities_total += get_float(row['electric']) + get_float(row['gas'])
 
     separator()
 
     print('Total paid for hoa assessments: {:0.2f}'.format(assessment_total))
     print('Total paid for homeowners insurance: {:0.2f}'.format(insurance_total))
+    print('Total paid for utilities (gas & electric): {:0.2f}'.format(utilities_total))
 
     separator()
 
