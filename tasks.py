@@ -3,6 +3,7 @@ from collections import defaultdict
 from decimal import Decimal
 
 from invoke import task
+from terminaltables import AsciiTable
 from spreadsheet import open_spreadsheet
 
 
@@ -32,18 +33,20 @@ def checking_account(ctx, year=CURRENT_YEAR):
         debit += get_decimal(row['Debit'])
         credit += get_decimal(row['Credit'])
 
-    print('Total debit: {:0.2f}'.format(debit))
-    print('Total credit: {:0.2f}'.format(credit))
-    print('Total revenue: {:0.2f}'.format(revenue))
+    data = [
+        ('Total debit', debit),
+        ('Total credit', credit),
+        ('Total revenue', revenue)
+    ]
+    table = AsciiTable(data, 'Summary')
+    table.inner_heading_row_border = False
+    print(table.table)
 
-    separator()
 
-    print('Categories:')
-    items = sorted(categories.items(), key=lambda x: -x[1])
-    for k, v in items:
-        if v > 0:
-            print('- {}: {:0.2f}'.format(k, v))
-
+    data = sorted(categories.items(), key=lambda x: x[1], reverse=True)
+    table = AsciiTable(data, 'Debits by category')
+    table.inner_heading_row_border = False
+    print(table.table)
 
 
 @task
@@ -54,9 +57,7 @@ def home_office(ctx, year=CURRENT_YEAR):
     rent_fields = ['hoa assessments', 'homeowners insurance', 'gas', 'electric',
         'mortgage']
     worksheet = ss.worksheet('Monthly fees')
-    assessment_total = 0
-    insurance_total = 0
-    utilities_total = 0
+    assessment_total = insurance_total = utilities_total = Decimal(0)
 
     print('Office rent by month:')
     for row in worksheet.get_all_records():

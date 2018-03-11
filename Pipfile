@@ -6,12 +6,13 @@ name = "pypi"
 [packages]
 
 arrow = "*"
-Flask = "*"
-"Flask-Mako" = "*"
+flask = "*"
+"flask-mako" = "*"
 gspread = "*"
 invoke = "*"
-Mako = "*"
+mako = "*"
 "oauth2client" = "*"
+terminaltables = "*"
 
 
 [dev-packages]
