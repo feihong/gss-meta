@@ -10,6 +10,10 @@ CURRENT_YEAR = str(datetime.today().year)
 
 @task
 def checking_account(ctx, year=CURRENT_YEAR):
+    """
+    Print business checking account metrics.
+
+    """
     ss = open_spreadsheet('Business Checking Account Activity')
     worksheet = ss.worksheet(year)
 

@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+
+arrow = "*"
+Flask = "*"
+"Flask-Mako" = "*"
+gspread = "*"
+invoke = "*"
+Mako = "*"
+"oauth2client" = "*"
+
+
+[dev-packages]
