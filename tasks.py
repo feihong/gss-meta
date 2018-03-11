@@ -1,5 +1,6 @@
 from datetime import datetime
 from collections import defaultdict
+from decimal import Decimal
 
 from invoke import task
 from spreadsheet import open_spreadsheet
@@ -17,21 +18,19 @@ def checking_account(ctx, year=CURRENT_YEAR):
     ss = open_spreadsheet('Business Checking Account Activity')
     worksheet = ss.worksheet(year)
 
-    debit = 0.0
-    credit = 0.0
-    revenue = 0.0
-    categories = defaultdict(float)
+    debit = credit = revenue = Decimal(0.0)
+    categories = defaultdict(Decimal)
 
     rows = worksheet.get_all_records()
     for row in rows:
         category = row['Category']
         if category == 'Revenue':
-            revenue += get_float(row['Credit'])
+            revenue += get_decimal(row['Credit'])
         else:
-            categories[category] += get_float(row['Debit'])
+            categories[category] += get_decimal(row['Debit'])
 
-        debit += get_float(row['Debit'])
-        credit += get_float(row['Credit'])
+        debit += get_decimal(row['Debit'])
+        credit += get_decimal(row['Credit'])
 
     print('Total debit: {:0.2f}'.format(debit))
     print('Total credit: {:0.2f}'.format(credit))
@@ -61,14 +60,14 @@ def home_office(ctx, year=CURRENT_YEAR):
 
     print('Office rent by month:')
     for row in worksheet.get_all_records():
-        total = sum(get_float(v) for k, v in row.items() if k in rent_fields)
+        total = sum(get_decimal(v) for k, v in row.items() if k in rent_fields)
         rent = total / 4
         print('{month}: {rent:0.2f} (total is {total:0.2f})'.format(
             month=row['Month'], total=total, rent=rent))
 
-        assessment_total += get_float(row['hoa assessments'])
-        insurance_total += get_float(row['homeowners insurance'])
-        utilities_total += get_float(row['electric']) + get_float(row['gas'])
+        assessment_total += get_decimal(row['hoa assessments'])
+        insurance_total += get_decimal(row['homeowners insurance'])
+        utilities_total += get_decimal(row['electric']) + get_decimal(row['gas'])
 
     separator()
 
@@ -82,21 +81,21 @@ def home_office(ctx, year=CURRENT_YEAR):
     worksheet = ss.worksheet('Repairs & maintenance')
     total = 0
     for row in worksheet.get_all_records():
-        total += get_float(row['Price'])
+        total += get_decimal(row['Price'])
 
     print('Repairs & maintenance total: {:0.2f}'.format(total))
 
 
-def get_float(text):
+def get_decimal(text):
     if text.strip() == '':
         return 0
     text = text.replace(',', '')
     if text.startswith('-$'):
-        return float(text[2:])
+        return Decimal(text[2:])
     elif text.startswith('$'):
-        return float(text[1:])
+        return Decimal(text[1:])
     else:
-        return float(text)
+        return Decimal(text)
 
 
 def separator():
