@@ -51,40 +51,41 @@ def checking_account(ctx, year=CURRENT_YEAR):
 
 @task
 def home_office(ctx, year=CURRENT_YEAR):
+    """
+    Show home office expenses.
+
+    """
     ss = open_spreadsheet('Home Office %s' % year)
 
-    # Calculate utilities & rent amounts
-    rent_fields = ['hoa assessments', 'homeowners insurance', 'gas', 'electric',
-        'mortgage']
     worksheet = ss.worksheet('Monthly fees')
-    assessment_total = insurance_total = utilities_total = Decimal(0)
+    categories = defaultdict(Decimal)
 
-    print('Office rent by month:')
     for row in worksheet.get_all_records():
-        total = sum(get_decimal(v) for k, v in row.items() if k in rent_fields)
-        rent = total / 4
-        print('{month}: {rent:0.2f} (total is {total:0.2f})'.format(
-            month=row['Month'], total=total, rent=rent))
+        categories['hoa assessments'] += get_decimal(row['hoa assessments'])
+        categories['homeowners insurance'] += get_decimal(row['homeowners insurance'])
+        categories['mortgage'] += get_decimal(row['mortgage'])
+        categories['utilities (gas & electric)'] += \
+            get_decimal(row['electric']) + get_decimal(row['gas'])
 
-        assessment_total += get_decimal(row['hoa assessments'])
-        insurance_total += get_decimal(row['homeowners insurance'])
-        utilities_total += get_decimal(row['electric']) + get_decimal(row['gas'])
+    data = [(k.capitalize(), v) for k, v in categories.items()]
 
-    separator()
+    data += [
+        (f'Total for {year}', sum(categories.values())),
+        (f'Office rent for {year}', sum(categories.values()) / 4),
+        ('Repairs & maintenance', get_rm_total(ss)),
+    ]
+    table = AsciiTable(data, 'Home office')
+    table.inner_heading_row_border = False
+    print(table.table)
 
-    print('Total paid for hoa assessments: {:0.2f}'.format(assessment_total))
-    print('Total paid for homeowners insurance: {:0.2f}'.format(insurance_total))
-    print('Total paid for utilities (gas & electric): {:0.2f}'.format(utilities_total))
 
-    separator()
-
-    # Calculate repairs & maintenance total
+def get_rm_total(ss):
+    "Calculate repairs & maintenance total"
     worksheet = ss.worksheet('Repairs & maintenance')
     total = 0
     for row in worksheet.get_all_records():
         total += get_decimal(row['Price'])
-
-    print('Repairs & maintenance total: {:0.2f}'.format(total))
+    return total
 
 
 def get_decimal(text):
