@@ -41,6 +41,7 @@ def oot(ctx):
   Print breakdown of out-of-town expenses for each trip
 
   """
+  categories = defaultdict(Decimal)
   trips = defaultdict(lambda: defaultdict(Decimal))
 
   with open('business.csv') as fp:
@@ -58,6 +59,7 @@ def oot(ctx):
       except:
         value = Decimal(0)
 
+      categories[category] += value
       trip[category] += value
 
   for code, trip in trips.items():
@@ -65,3 +67,7 @@ def oot(ctx):
     table = AsciiTable(data, code)
     table.inner_heading_row_border = False
     print(table.table)
+
+  table = AsciiTable(categories.items(), 'Categories')
+  table.inner_heading_row_border = False
+  print(table.table)
