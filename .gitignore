@@ -1,2 +1,7 @@
+/.vscode
 credentials.json
 __pycache__
+
+# Input files
+business.csv
+home-office.csv

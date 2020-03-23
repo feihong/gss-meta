@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-
 arrow = "*"
 flask = "*"
 "flask-mako" = "*"
@@ -14,5 +13,6 @@ mako = "*"
 "oauth2client" = "*"
 terminaltables = "*"
 
-
 [dev-packages]
+pylint = "*"
+ipython = "*"
